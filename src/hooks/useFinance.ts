@@ -60,9 +60,10 @@ export function useFinance(): FinanceApi {
   }, []);
 
   useEffect(() => {
-    if (supabaseConfigured && supabase) {
+    const client = supabase;
+    if (supabaseConfigured && client) {
       void loadSupabase();
-      const ch = supabase
+      const ch = client
         .channel("finance_entries_changes")
         .on(
           "postgres_changes",
@@ -73,7 +74,7 @@ export function useFinance(): FinanceApi {
         )
         .subscribe();
       return () => {
-        void supabase.removeChannel(ch);
+        void client.removeChannel(ch);
       };
     }
     const unsub = localSubscribe(setEntries);
