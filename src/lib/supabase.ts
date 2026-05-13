@@ -1,16 +1,40 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { FinanceEntry } from "@/types";
 
-const url = import.meta.env.VITE_SUPABASE_URL?.trim();
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+const rawUrl = import.meta.env.VITE_SUPABASE_URL;
+const rawKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-export const supabaseConfigured = Boolean(url && key);
+function stripQuotes(s: string | undefined): string {
+  if (!s) return "";
+  const t = String(s).trim();
+  if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) {
+    return t.slice(1, -1).trim();
+  }
+  return t;
+}
 
-export const supabase: SupabaseClient | null = supabaseConfigured
-  ? createClient(url!, key!, {
+const url = stripQuotes(rawUrl);
+const key = stripQuotes(rawKey);
+
+/** True when env vars look configured (even if client failed to construct). */
+export const hadSupabaseEnv = Boolean(url && key);
+
+let supabase: SupabaseClient | null = null;
+export let supabaseBootstrapError: string | null = null;
+
+if (url && key) {
+  try {
+    supabase = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false },
-    })
-  : null;
+    });
+  } catch (e) {
+    supabaseBootstrapError =
+      e instanceof Error ? e.message : "Could not initialize Supabase client.";
+  }
+}
+
+export { supabase };
+export const supabaseConfigured = Boolean(supabase);
 
 export function rowToEntry(r: Record<string, unknown>): FinanceEntry {
   const k = r.kind;

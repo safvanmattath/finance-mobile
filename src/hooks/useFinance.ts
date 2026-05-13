@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { FinanceEntry } from "@/types";
-import { entryToRow, rowToEntry, supabase, supabaseConfigured } from "@/lib/supabase";
+import {
+  entryToRow,
+  hadSupabaseEnv,
+  rowToEntry,
+  supabase,
+  supabaseBootstrapError,
+  supabaseConfigured,
+} from "@/lib/supabase";
 import {
   localDelete,
   localList,
@@ -21,13 +28,21 @@ export interface FinanceApi {
 export function useFinance(): FinanceApi {
   const [entries, setEntries] = useState<FinanceEntry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => {
+    if (hadSupabaseEnv && !supabaseConfigured && supabaseBootstrapError) {
+      return `${supabaseBootstrapError} Using offline storage on this device.`;
+    }
+    return null;
+  });
   const mode = supabaseConfigured ? "supabase" : "local";
 
   const loadSupabase = useCallback(async () => {
     if (!supabase) return;
     setLoading(true);
-    setError(null);
+    setError((prev) => {
+      if (prev?.includes("Using offline storage")) return prev;
+      return null;
+    });
     const { data, error: err } = await supabase
       .from("finance_entries")
       .select("*")
@@ -37,6 +52,9 @@ export function useFinance(): FinanceApi {
       setEntries([]);
     } else {
       setEntries((data ?? []).map((r) => rowToEntry(r as Record<string, unknown>)));
+      setError((prev) =>
+        prev?.includes("Using offline storage") ? prev : null,
+      );
     }
     setLoading(false);
   }, []);

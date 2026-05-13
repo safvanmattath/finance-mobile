@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Do not add a catch-all /* → index.html redirect here: on some setups it can
+# shadow /assets/* and return HTML for .js files (blank page). This SPA works
+# from "/" only; use public/_redirects if you add client-side routes later.
