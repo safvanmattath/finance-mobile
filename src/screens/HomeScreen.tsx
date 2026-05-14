@@ -5,7 +5,7 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { Icon } from "@/components/Icon";
 
 function money(n: number) {
-  return n.toLocaleString(undefined, { style: "currency", currency: "USD" });
+  return n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 });
 }
 
 function netWindow(
