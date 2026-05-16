@@ -1,12 +1,10 @@
 import { useMemo, useState } from "react";
 import type { FilterTab, FinanceEntry } from "@/types";
+import type { CurrencyType } from "@/lib/currency";
+import { formatMoney } from "@/lib/currency";
 import { Screen } from "@/components/Layout";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Icon } from "@/components/Icon";
-
-function money(n: number) {
-  return n.toLocaleString("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 });
-}
 
 const tabs: { id: FilterTab; label: string }[] = [
   { id: "all", label: "All" },
@@ -18,9 +16,11 @@ const tabs: { id: FilterTab; label: string }[] = [
 export function TransfersScreen({
   entries,
   onOpen,
+  currency,
 }: {
   entries: FinanceEntry[];
   onOpen: (e: FinanceEntry) => void;
+  currency: CurrencyType;
 }) {
   const [tab, setTab] = useState<FilterTab>("all");
   const [q, setQ] = useState("");
@@ -91,7 +91,7 @@ export function TransfersScreen({
                 </div>
               </div>
               <div className="rowbtn__side">
-                <span className="rowbtn__amt">{money(e.amount)}</span>
+                <span className="rowbtn__amt">{formatMoney(e.amount, currency)}</span>
                 {e.paid_amount < e.amount ? (
                   <ProgressBar
                     value={e.paid_amount}

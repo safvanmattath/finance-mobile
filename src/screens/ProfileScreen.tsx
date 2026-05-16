@@ -1,20 +1,22 @@
 import { useMemo, useState } from "react";
 import type { FinanceEntry } from "@/types";
+import type { CurrencyType } from "@/lib/currency";
+import { formatMoney, getAllCurrencies } from "@/lib/currency";
 import { Screen, StatCard } from "@/components/Layout";
 import { Icon } from "@/components/Icon";
 import { entriesToCsv, downloadCsv } from "@/lib/csv";
 import { useDerivedStats } from "@/hooks/useFinance";
 
-function money(n: number) {
-  return n.toLocaleString("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 });
-}
-
 export function ProfileScreen({
   entries,
   mode,
+  currency,
+  onCurrencyChange,
 }: {
   entries: FinanceEntry[];
   mode: "supabase" | "local";
+  currency: CurrencyType;
+  onCurrencyChange: (currency: CurrencyType) => void;
 }) {
   const stats = useDerivedStats(entries);
   const [busy, setBusy] = useState(false);
@@ -46,7 +48,7 @@ export function ProfileScreen({
         </div>
         <p className="profile-hero__label">All-time net position</p>
         <p className="profile-hero__value">
-          {money(stats.income - stats.expense + stats.saving)}
+          {formatMoney(stats.income - stats.expense + stats.saving, currency)}
         </p>
         <p className="muted">
           Storage: {mode === "supabase" ? "Supabase (live sync)" : "Local device"}
@@ -68,6 +70,28 @@ export function ProfileScreen({
           tone="accent"
         />
       </div>
+
+      <section className="panel" aria-labelledby="currency-heading">
+        <div className="panel__head">
+          <h2 id="currency-heading" className="panel__title">
+            Currency
+          </h2>
+        </div>
+        <p className="muted">Select your preferred currency for display.</p>
+        <div className="seg seg--block" role="tablist" aria-label="Currency selection">
+          {getAllCurrencies().map((c) => (
+            <button
+              key={c}
+              type="button"
+              className={`seg__btn${currency === c ? " seg__btn--on" : ""}`}
+              onClick={() => onCurrencyChange(c)}
+              aria-pressed={currency === c}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section className="panel" aria-labelledby="export-heading">
         <div className="panel__head">

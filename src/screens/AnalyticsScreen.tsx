@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import type { FinanceEntry } from "@/types";
+import type { CurrencyType } from "@/lib/currency";
+import { formatMoney } from "@/lib/currency";
 import { Screen, StatCard } from "@/components/Layout";
 import { BarChart } from "@/components/BarChart";
 import {
@@ -8,11 +10,7 @@ import {
   useTopContacts,
 } from "@/hooks/useFinance";
 
-function money(n: number) {
-  return n.toLocaleString("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 });
-}
-
-export function AnalyticsScreen({ entries }: { entries: FinanceEntry[] }) {
+export function AnalyticsScreen({ entries, currency }: { entries: FinanceEntry[]; currency: CurrencyType }) {
   const { labels, income, expense } = useMonthlyBuckets(entries, 6);
   const top = useTopContacts(entries, 5);
   const totals = useDerivedStats(entries);
@@ -48,13 +46,13 @@ export function AnalyticsScreen({ entries }: { entries: FinanceEntry[] }) {
       <div className="grid2">
         <StatCard
           title="Avg monthly income"
-          value={money(averages.simpleInc)}
+          value={formatMoney(averages.simpleInc, currency)}
           icon="wallet"
           tone="good"
         />
         <StatCard
           title="Avg monthly expenses"
-          value={money(averages.simpleExp)}
+          value={formatMoney(averages.simpleExp, currency)}
           icon="receipt"
           tone="bad"
         />
@@ -71,7 +69,7 @@ export function AnalyticsScreen({ entries }: { entries: FinanceEntry[] }) {
             <li key={row.person} className="rank__row">
               <span className="rank__idx">{i + 1}</span>
               <span className="rank__name">{row.person}</span>
-              <span className="rank__val">{money(row.total)}</span>
+              <span className="rank__val">{formatMoney(row.total, currency)}</span>
             </li>
           ))}
           {top.length === 0 ? (

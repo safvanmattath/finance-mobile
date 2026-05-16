@@ -1,12 +1,10 @@
 import { useMemo } from "react";
 import type { FinanceEntry } from "@/types";
+import type { CurrencyType } from "@/lib/currency";
+import { formatMoney } from "@/lib/currency";
 import { Screen, StatCard } from "@/components/Layout";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Icon } from "@/components/Icon";
-
-function money(n: number) {
-  return n.toLocaleString("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 });
-}
 
 function netWindow(
   entries: FinanceEntry[],
@@ -35,9 +33,11 @@ function netWindow(
 export function HomeScreen({
   entries,
   onOpen,
+  currency,
 }: {
   entries: FinanceEntry[];
   onOpen: (e: FinanceEntry) => void;
+  currency: CurrencyType;
 }) {
   const stats = useMemo(() => {
     let income = 0;
@@ -92,7 +92,7 @@ export function HomeScreen({
             )}
           </span>
         </div>
-        <p className="hero__value">{money(stats.netWealth)}</p>
+        <p className="hero__value">{formatMoney(stats.netWealth, currency)}</p>
         <p className="hero__hint">
           Income − expenses + savings. Short-term trend compares rolling windows.
         </p>
@@ -101,19 +101,19 @@ export function HomeScreen({
       <div className="grid2">
         <StatCard
           title="Income"
-          value={money(stats.income)}
+          value={formatMoney(stats.income, currency)}
           icon="arrowUp"
           tone="good"
         />
         <StatCard
           title="Expenses"
-          value={money(stats.expense)}
+          value={formatMoney(stats.expense, currency)}
           icon="arrowDown"
           tone="bad"
         />
         <StatCard
           title="Savings"
-          value={money(stats.saving)}
+          value={formatMoney(stats.saving, currency)}
           icon="piggy"
           tone="accent"
         />
@@ -151,7 +151,7 @@ export function HomeScreen({
                   </div>
                 </div>
                 <div className="rowbtn__side">
-                  <span className="rowbtn__amt">{money(e.amount)}</span>
+                  <span className="rowbtn__amt">{formatMoney(e.amount, currency)}</span>
                   {e.amount > 0 && e.paid_amount < e.amount ? (
                     <ProgressBar
                       value={e.paid_amount}

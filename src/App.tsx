@@ -5,6 +5,7 @@ import { ActionSheet } from "@/components/ActionSheet";
 import { Icon } from "@/components/Icon";
 import { useFinance } from "@/hooks/useFinance";
 import type { FinanceEntry } from "@/types";
+import type { CurrencyType } from "@/lib/currency";
 import { HomeScreen } from "@/screens/HomeScreen";
 import { TransfersScreen } from "@/screens/TransfersScreen";
 import { AnalyticsScreen } from "@/screens/AnalyticsScreen";
@@ -18,6 +19,7 @@ export default function App() {
   const [addOpen, setAddOpen] = useState(false);
   const [active, setActive] = useState<FinanceEntry | null>(null);
   const [busy, setBusy] = useState(false);
+  const [currency, setCurrency] = useState<CurrencyType>("INR");
 
   const onSave = async (e: FinanceEntry) => {
     setBusy(true);
@@ -77,16 +79,16 @@ export default function App() {
           </p>
         ) : null}
         {!finance.loading && tab === "home" ? (
-          <HomeScreen entries={finance.entries} onOpen={setActive} />
+          <HomeScreen entries={finance.entries} onOpen={setActive} currency={currency} />
         ) : null}
         {!finance.loading && tab === "transfers" ? (
-          <TransfersScreen entries={finance.entries} onOpen={setActive} />
+          <TransfersScreen entries={finance.entries} onOpen={setActive} currency={currency} />
         ) : null}
         {!finance.loading && tab === "analytics" ? (
-          <AnalyticsScreen entries={finance.entries} />
+          <AnalyticsScreen entries={finance.entries} currency={currency} />
         ) : null}
         {!finance.loading && tab === "profile" ? (
-          <ProfileScreen entries={finance.entries} mode={finance.mode} />
+          <ProfileScreen entries={finance.entries} mode={finance.mode} currency={currency} onCurrencyChange={setCurrency} />
         ) : null}
       </main>
 
