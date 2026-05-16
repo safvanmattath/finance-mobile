@@ -5,7 +5,7 @@ import { ProgressBar } from "@/components/ProgressBar";
 import { Icon } from "@/components/Icon";
 
 function money(n: number) {
-  return n.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 });
+  return n.toLocaleString("en-IN", { style: "currency", currency: "INR", minimumFractionDigits: 0 });
 }
 
 const tabs: { id: FilterTab; label: string }[] = [
