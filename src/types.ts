@@ -11,7 +11,7 @@ export interface FinanceEntry {
   occurred_on: string;
   kind: EntryKind;
   category: string;
-  currency: CurrencyType;
+  currency?: CurrencyType;
   created_at?: string;
 }
 
