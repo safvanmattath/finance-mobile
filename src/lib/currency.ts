@@ -2,7 +2,7 @@ export type CurrencyType = "INR" | "AED";
 
 const CURRENCY_CONFIG: Record<CurrencyType, { locale: string; symbol: string }> = {
   INR: { locale: "en-IN", symbol: "₹" },
-  AED: { locale: "en-AE", symbol: "د.إ" },
+  AED: { locale: "en-AE", symbol: "AED" },
 };
 
 export function formatMoney(amount: number, currency: CurrencyType): string {
