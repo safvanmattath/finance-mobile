@@ -67,7 +67,8 @@ export function HomeScreen({
   const currencyBreakdown = useMemo(() => {
     const breakdown: Record<CurrencyType, number> = { INR: 0, AED: 0 };
     for (const e of entries) {
-      breakdown[e.currency] += e.amount;
+      const entryCurrency = (e.currency || "INR") as CurrencyType;
+      breakdown[entryCurrency] += e.amount;
     }
     return breakdown;
   }, [entries]);
@@ -169,7 +170,7 @@ export function HomeScreen({
                   </div>
                 </div>
                 <div className="rowbtn__side">
-                  <span className="rowbtn__amt">{formatMoney(e.amount, e.currency)}</span>
+                  <span className="rowbtn__amt">{formatMoney(e.amount, (e.currency || "INR") as CurrencyType)}</span>
                   {e.amount > 0 && e.paid_amount < e.amount ? (
                     <ProgressBar
                       value={e.paid_amount}

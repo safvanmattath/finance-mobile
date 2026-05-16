@@ -91,7 +91,7 @@ export function TransfersScreen({
                 </div>
               </div>
               <div className="rowbtn__side">
-                <span className="rowbtn__amt">{formatMoney(e.amount, currency)}</span>
+                <span className="rowbtn__amt">{formatMoney(e.amount, (e.currency || "INR") as CurrencyType)}</span>
                 {e.paid_amount < e.amount ? (
                   <ProgressBar
                     value={e.paid_amount}
