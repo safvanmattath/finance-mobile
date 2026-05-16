@@ -41,6 +41,7 @@ export function ActionSheet({
       ...entry,
       paid_amount: pd,
       settled: pd >= entry.amount,
+      currency: entry.currency || "INR",
     };
     await onSave(next);
     onClose();
@@ -54,6 +55,7 @@ export function ActionSheet({
       paid_amount: nextSettled
         ? entry.amount
         : Math.min(entry.paid_amount, entry.amount),
+      currency: entry.currency || "INR",
     });
     onClose();
   };
