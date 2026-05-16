@@ -64,6 +64,14 @@ export function HomeScreen({
       .slice(0, 5);
   }, [entries]);
 
+  const currencyBreakdown = useMemo(() => {
+    const breakdown: Record<CurrencyType, number> = { INR: 0, AED: 0 };
+    for (const e of entries) {
+      breakdown[e.currency] += e.amount;
+    }
+    return breakdown;
+  }, [entries]);
+
   return (
     <Screen
       title="Dashboard"
@@ -92,7 +100,17 @@ export function HomeScreen({
             )}
           </span>
         </div>
-        <p className="hero__value">{formatMoney(stats.netWealth, currency)}</p>
+        <div>
+          {currencyBreakdown.INR > 0 && (
+            <p className="hero__value">{formatMoney(currencyBreakdown.INR, "INR")}</p>
+          )}
+          {currencyBreakdown.AED > 0 && (
+            <p className="hero__value">{formatMoney(currencyBreakdown.AED, "AED")}</p>
+          )}
+          {currencyBreakdown.INR === 0 && currencyBreakdown.AED === 0 && (
+            <p className="hero__value">{formatMoney(stats.netWealth, currency)}</p>
+          )}
+        </div>
         <p className="hero__hint">
           Income − expenses + savings. Short-term trend compares rolling windows.
         </p>
@@ -151,7 +169,7 @@ export function HomeScreen({
                   </div>
                 </div>
                 <div className="rowbtn__side">
-                  <span className="rowbtn__amt">{formatMoney(e.amount, currency)}</span>
+                  <span className="rowbtn__amt">{formatMoney(e.amount, e.currency)}</span>
                   {e.amount > 0 && e.paid_amount < e.amount ? (
                     <ProgressBar
                       value={e.paid_amount}

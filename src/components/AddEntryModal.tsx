@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { EntryKind, FinanceEntry } from "@/types";
+import type { EntryKind, FinanceEntry, CurrencyType } from "@/types";
 import { newId } from "@/lib/id";
 import { Icon } from "@/components/Icon";
 
@@ -20,6 +20,7 @@ export function AddEntryModal({
   const [paid, setPaid] = useState("");
   const [notes, setNotes] = useState("");
   const [category, setCategory] = useState("General");
+  const [currency, setCurrency] = useState<CurrencyType>("INR");
   const [occurredOn, setOccurredOn] = useState(() =>
     new Date().toISOString().slice(0, 10),
   );
@@ -35,6 +36,7 @@ export function AddEntryModal({
     setPaid("");
     setNotes("");
     setCategory("General");
+    setCurrency("INR");
     setOccurredOn(new Date().toISOString().slice(0, 10));
     setSettled(false);
     setErr(null);
@@ -75,6 +77,7 @@ export function AddEntryModal({
       occurred_on: occurredOn,
       kind,
       category: category.trim() || "General",
+      currency,
     };
     try {
       await onSave(entry);
@@ -179,6 +182,22 @@ export function AddEntryModal({
               />
             </label>
           </div>
+          <label className="field">
+            <span>Currency</span>
+            <div className="seg" role="tablist" aria-label="Currency selection">
+              {(["INR", "AED"] as const).map((c) => (
+                <button
+                  key={c}
+                  type="button"
+                  className={`seg__btn${currency === c ? " seg__btn--on" : ""}`}
+                  onClick={() => setCurrency(c)}
+                  aria-pressed={currency === c}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </label>
           <label className="field">
             <span>Date</span>
             <input
